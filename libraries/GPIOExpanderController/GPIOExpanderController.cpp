@@ -11,7 +11,10 @@ This is a library for the
         writeRegister
         writeRegisterPair
         readInputRegister
+        readInputRegisterPair
         readOutputRegister
+        readOutputRegisterPair
+        writeConfigurationPort
 */
 /**************************************************************************/
 
@@ -168,6 +171,18 @@ int8_t GPIO_EXPANDER::readInputRegister(uint8_t port)
 }
 
 /**************************************************************************/
+/*! readInputRegisterPair()
+    @brief reads the INPUT register pair beginning with port 0
+    @param
+*/
+/**************************************************************************/
+
+int16_t GPIO_EXPANDER::readInputRegisterPair()
+{
+        return readRegister(GPIO_INPUT_REGISTER_PORT0);
+}
+
+/**************************************************************************/
 /*! readOutputRegister(uint8_t port)
     @brief reads the OUTPUT register of the selected port
     @param port = selected port (0 or 1) 
@@ -183,6 +198,41 @@ int8_t GPIO_EXPANDER::readOutputRegister(uint8_t port)
     else if(port == 1)
     {
         return readRegister(GPIO_OUTPUT_REGISTER_PORT1);
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+/**************************************************************************/
+/*! readOutputRegisterPair()
+    @brief reads the OUTPUT register pair beginning with port 0
+    @param
+*/
+/**************************************************************************/
+
+int16_t GPIO_EXPANDER::readOutputRegisterPair()
+{
+        return readRegister(GPIO_OUTPUT_REGISTER_PORT0);
+}
+
+/**************************************************************************/
+/*! writeConfigurationPort(uint8_t port)
+    @brief configures Input/Output direction of the selected port
+    @param port = selected port (0 or 1)
+*/
+/**************************************************************************/
+
+void GPIO_EXPANDER::writeConfigurationPort(uint8_t port, uint8_t configuration)
+{
+    if(port == 0)
+    {
+        return writeRegister(GPIO_CONFIGURATION_REGISTER_PORT0,configuration);
+    }
+    else if(port == 1)
+    {
+        return writeRegister(GPIO_CONFIGURATION_REGISTER_PORT1, configuration);
     }
     else
     {

@@ -61,7 +61,10 @@ class GPIO_EXPANDER
 
     //register dedicated functions
     int8_t readInputRegister(uint8_t port);
+    int16_t readInputRegisterPair();
     int8_t readOutputRegister(uint8_t port);
+    int16_t readOutputRegisterPair();
+    void writeConfigurationPort(uint8_t port, uint8_t configuration);
 
   private:
     const byte _device_address;
