@@ -1,66 +1,33 @@
-//Library EEE parts
-#include "GPIOExpanderPCAL6416A.h"
-#include "RangeSensorVL6180X.h"
+//EEE parts libraries
+//#include "GPIOExpanderPCAL6416A.h"
+//#include "RangeSensorVL6180X.h"
 //#include "RangeSensorVL53L0.h"
 
-//Library hardware
+//Hardware libraries
 #include "Wire.h"
-//#include "GestureBoardHAL.h"
+#include "GestureBoardHAL_V1_1.h"
 
-//Library LED bar
-#include "GestureBoardLED.h"
-//#include "GestureBoardMotionSensing.h"
-
-//A integrer class GestureBoard (integre les define liés à la board
-
-#define GPIO_LED_RESET 4
-#define GPIO_RANGE_SENSORS_RESET 5
-#define LED_PWM_PIN 6
-#define CHIP_ENABLE_2_8V 7
-
-#define SENSOR_0_ADDRESS 0x29
-#define SENSOR_1_ADDRESS 0x31
-#define SENSOR_2_ADDRESS 0x32
-#define SENSOR_3_ADDRESS 0x33
-#define SENSOR_4_ADDRESS 0x34
-#define SENSOR_5_ADDRESS 0x35
-
-//Led Expander instantiate
 GPIO_EXPANDER* pledExpander = new GPIO_EXPANDER(0x20);
-GPIO_EXPANDER sensorExpander(0x21);
+GPIO_EXPANDER* psensorExpander = new GPIO_EXPANDER(0x21);
 
-void assignSensorsAddress(uint8_t address1, uint8_t address2, uint8_t address3, uint8_t address4, uint8_t address5);
-
-GestureBoardLED leds(*pledExpander, GestureBoardLED::getAnimation(0), 150);
-
-// Fin du gestureboard
-
-RANGE_SENSOR sensor0(SENSOR_0_ADDRESS);
+RANGE_SENSOR* psensor0 = new RANGE_SENSOR(SENSOR_0_ADDRESS);
 RANGE_SENSOR sensor1(SENSOR_1_ADDRESS);
 RANGE_SENSOR sensor2(SENSOR_2_ADDRESS);
 RANGE_SENSOR sensor3(SENSOR_3_ADDRESS);
 RANGE_SENSOR sensor4(SENSOR_4_ADDRESS);
 RANGE_SENSOR sensor5(SENSOR_5_ADDRESS);
 
+GESTURE_BOARD_HAL* gestureBoardHAL = new GESTURE_BOARD_HAL();
+
+//Functional libraries
+#include "GestureBoardLED.h"
+//#include "GestureBoardMotionSensing.h"
+
+GestureBoardLED leds(*pledExpander, GestureBoardLED::getAnimation(0), 150);
+
 void setup()
 {
-  //A integrer dans gesture board
-  pinMode(CHIP_ENABLE_2_8V, OUTPUT);
-  pinMode(GPIO_LED_RESET, OUTPUT);
-  pinMode(GPIO_RANGE_SENSORS_RESET,OUTPUT);
-  pinMode(LED_PWM_PIN, OUTPUT);
-
-  digitalWrite(CHIP_ENABLE_2_8V, 1);
-  delay(1000);
-
-  digitalWrite(GPIO_LED_RESET, 1);
-  digitalWrite(GPIO_RANGE_SENSORS_RESET, 1);
-
-  Wire.begin();
-  Serial.println("I2C link started");
-
-  Serial.begin(115200);
-  Serial.println("serial link started");
+  gestureBoardHAL->init();
 
   leds.init();
   leds.start();
@@ -68,13 +35,13 @@ void setup()
   delay(10);
   leds.setAnimation(GestureBoardLED::getAnimation(1));
 
+  // ces fontions à intégrer dans l'init du détecteur de mouvement
   delay(10);
-  sensorExpander.writeConfigurationPortPair(0xFF00);
-  sensorExpander.writeRegisterPair(0x02, 0x0000);
-  Serial.println("Expanders configured!");
+  psensorExpander->writeConfigurationPortPair(0xFF00);
+  psensorExpander->writeRegisterPair(0x02, 0x0000);
   delay(10);
 
-  assignSensorsAddress(SENSOR_1_ADDRESS, SENSOR_2_ADDRESS, SENSOR_3_ADDRESS, SENSOR_4_ADDRESS, SENSOR_5_ADDRESS);
+  gestureBoardHAL->assignSensorsAddress(*psensorExpander, *psensor0, SENSOR_1_ADDRESS, SENSOR_2_ADDRESS, SENSOR_3_ADDRESS, SENSOR_4_ADDRESS, SENSOR_5_ADDRESS);
 
   sensor1.setPrivateRegisters();
   sensor2.setPrivateRegisters();
@@ -168,29 +135,4 @@ void loop()
   */
   leds.update();
 
-}
-
-
-void assignSensorsAddress(uint8_t address1, uint8_t address2, uint8_t address3, uint8_t address4, uint8_t address5)
-{
-  sensorExpander.writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x01);
-  delay(10);
-  sensor0.writeByte(I2C_SLAVE__DEVICE_ADDRESS, address1);
-  Serial.println("1st address changed");
-  sensorExpander.writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x03);
-  delay(10);
-  sensor0.writeByte(I2C_SLAVE__DEVICE_ADDRESS, address2);
-  Serial.println("2nd address changed");
-  sensorExpander.writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x07);
-  delay(10);
-  sensor0.writeByte(I2C_SLAVE__DEVICE_ADDRESS, address3);
-  Serial.println("3rd address changed");
-  sensorExpander.writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x0F);
-  delay(10);
-  sensor0.writeByte(I2C_SLAVE__DEVICE_ADDRESS, address4);
-  Serial.println("4th address changed");
-  sensorExpander.writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x1F);
-  delay(10);
-  sensor0.writeByte(I2C_SLAVE__DEVICE_ADDRESS, address5);
-  Serial.println("5th address changed");
 }

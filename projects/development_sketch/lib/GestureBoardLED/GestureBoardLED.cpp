@@ -106,7 +106,7 @@ void ThreeButtons::update(GestureBoardLED& parent, int count)
 
 TwoButtons::TwoButtons()
 {
-    
+
 }
 
 void TwoButtons::update(GestureBoardLED& parent, int count)
@@ -153,7 +153,7 @@ SleepModePulse::SleepModePulse()
 
 void SleepModePulse::update(GestureBoardLED& parent, int count)
 {
-    
+
 }
 
 //Gesture Board LED methods
@@ -196,7 +196,7 @@ void GestureBoardLED::update()
         }
         this->_runningAnimation->update(*this, this->_count);
     }
-    
+
 }
 
 void GestureBoardLED::start()
@@ -213,7 +213,7 @@ void GestureBoardLED::stop()
     delay(10);
 }
 
-void GestureBoardLED::reset()   
+void GestureBoardLED::reset()
 {
     this->_count = 0;
 }
