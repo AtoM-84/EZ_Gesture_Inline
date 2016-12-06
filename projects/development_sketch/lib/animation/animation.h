@@ -5,8 +5,7 @@
 
 class Animation
 {
-  public:
-    virtual void update(GestureBoardHalLed& parent, int count) = 0;
+    virtual void update(const GestureBoardHalLed& parent, const int count) = 0;
 };
 
 #endif
