@@ -1,11 +1,9 @@
-
 #ifndef GESTURE_BOARD_HAL_V1_1_H
 #define GESTURE_BOARD_HAL_V1_1_H
 
 #include "Arduino.h"
 #include "Wire.h"
 #include "GPIOExpanderPCAL6416A.h"
-#include "gestureBoardHAL_LED.h"
 #include "RangeSensorVL6180X.h"
 
 #define GPIO_LED_RESET 4
@@ -27,25 +25,7 @@ class GestureBoardHal_V1_1
 {
 public:
   GestureBoardHal_V1_1();
-  //void init();
-  //void assignSensorsAddress(GPIO_EXPANDER& sensorExpander, RANGE_SENSOR& sensorDefault, uint8_t address1, uint8_t address2, uint8_t address3, uint8_t address4, uint8_t address5);
+  void init();
 };
-
-class GestureBoardHalLedV1_1 : public GestureBoardHalLed
-{
-
-private:
-  GPIO_EXPANDER* _pGPIO;
-  int _lastMillis;
-  int _delay;
-
-public:
-  GestureBoardHalLedV1_1(Animation* defaultAnim, int delay);
-  virtual void init();
-  virtual void dim(int value);
-  virtual void set(int mapping[]);
-  virtual void update();
-};
-
 
 #endif
