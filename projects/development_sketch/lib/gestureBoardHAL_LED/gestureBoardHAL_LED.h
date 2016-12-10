@@ -2,7 +2,6 @@
 #define GESTURE_BOARD_HAL_LED_H
 
 #include "Arduino.h"
-#include "animation.h"
 
 class GestureBoardHalLed;
 class Animation;

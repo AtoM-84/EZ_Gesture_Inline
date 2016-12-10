@@ -4,6 +4,8 @@
 #include "gestureBoardHAL_V1_1.h"
 #include "gestureBoardHAL_LED.h"
 
+#define GPIO_EXPANDER_LED_ADDRESS 0x20
+
 class GestureBoardHalLedV1_1 : public GestureBoardHalLed
 {
 
