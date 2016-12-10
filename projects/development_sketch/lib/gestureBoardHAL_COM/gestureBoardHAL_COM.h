@@ -6,9 +6,10 @@
 class GestureBoardHalCom
 {
 public:
-  byte _bufferIn;
+  byte _bufferIn[32];
   char* _bufferOut;
   int _bufferLength;
+  bool _newMessage;
 
 protected:
   long _baudRate;
@@ -18,7 +19,7 @@ public:
   virtual void open() = 0;
   virtual void close() = 0;
   virtual void readMessage() = 0;
-  virtual void showNewMessage() = 0;
+  virtual void showLastMessage() = 0;
   virtual void sendMessage(char* messageOut, int messageLength) = 0;
 };
 

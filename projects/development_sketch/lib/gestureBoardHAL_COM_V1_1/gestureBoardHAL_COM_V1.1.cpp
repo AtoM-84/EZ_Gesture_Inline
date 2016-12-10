@@ -30,18 +30,51 @@ int GestureBoardHalCom_V1_1::onData()
 }
 
 void GestureBoardHalCom_V1_1::readMessage() {
-  if (Serial.available()) {
-  this->_bufferIn = Serial.read();
-  Serial.write(this->_bufferIn);
-  }
 
+  static boolean InProgress = false;
+  static int ndx = 0;
+  char startMarker = '<';
+  char endMarker = '>';
+  byte rc;
+  byte message[32];
+
+  while (Serial.available()) {
+  rc = Serial.read();
+
+  if (InProgress == true) {
+      if (rc != endMarker) {
+        message[ndx] = rc;
+        ndx++;
+      }
+      else {
+          message[ndx] = '\0';
+          InProgress = false;
+          this->_bufferLength = ndx +1;
+          for(int i=0; i<this->_bufferLength; i++)
+          {
+            this->_bufferIn[i] = message[i];
+          }
+          ndx = 0;
+          this->_newMessage = true;
+      }
+  }
+  else if (rc == startMarker) {
+      InProgress = true;
+  }
+}
 }
 
-void GestureBoardHalCom_V1_1::showNewMessage() {
-  if (Serial.available()) {
-    Serial.write(this->_bufferIn);
+void GestureBoardHalCom_V1_1::showLastMessage() {
+  if (this->_newMessage)
+  {
+    for(int i=0; i<this->_bufferLength; i++)
+    {
+      Serial.write(this->_bufferIn[i]);
+    }
   }
+  this->_newMessage = false;
 }
+
 
 void GestureBoardHalCom_V1_1::sendMessage(char* messageOut, int messageLength)
 {

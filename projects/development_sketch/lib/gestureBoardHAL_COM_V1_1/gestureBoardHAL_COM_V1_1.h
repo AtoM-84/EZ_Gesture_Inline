@@ -12,7 +12,7 @@ class GestureBoardHalCom_V1_1 : public GestureBoardHalCom
     virtual void close();
     virtual int onData();
     virtual void readMessage();
-    virtual void showNewMessage();
+    virtual void showLastMessage();
     virtual void sendMessage(char* messageOut, int messageLength);
 };
 
