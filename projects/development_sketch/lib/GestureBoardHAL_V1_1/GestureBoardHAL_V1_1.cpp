@@ -17,8 +17,4 @@ void GestureBoardHal_V1_1::init()
   digitalWrite(GPIO_RANGE_SENSORS_RESET, 1);
 
   Wire.begin();
-  Serial.println("I2C link started");
-
-  Serial.begin(115200);
-  Serial.println("serial link started");
 }
