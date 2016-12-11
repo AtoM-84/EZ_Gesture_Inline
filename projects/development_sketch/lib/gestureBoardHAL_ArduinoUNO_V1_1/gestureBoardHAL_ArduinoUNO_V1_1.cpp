@@ -1,6 +1,6 @@
-#include "gestureBoardHAL_V1_1.h"
+#include "gestureBoardHAL_ArduinoUNO_V1_1.h"
 
-GestureBoardHal_V1_1::GestureBoardHal_V1_1()
+GestureBoardHal_ArduinoUNO_V1_1::GestureBoardHal_ArduinoUNO_V1_1()
 {
   pinMode(CHIP_ENABLE_2_8V, OUTPUT);
   pinMode(GPIO_LED_RESET, OUTPUT);
@@ -8,7 +8,7 @@ GestureBoardHal_V1_1::GestureBoardHal_V1_1()
   pinMode(LED_PWM_PIN, OUTPUT);
 }
 
-void GestureBoardHal_V1_1::init()
+void GestureBoardHal_ArduinoUNO_V1_1::init()
 {
   digitalWrite(CHIP_ENABLE_2_8V, 1);
   delay(1000);
