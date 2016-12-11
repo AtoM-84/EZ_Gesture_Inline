@@ -69,38 +69,35 @@ void SwipeLeft::update(GestureBoardHalLed& parent, int count)
       current_mapping.mappingLed_bit.ring1_0 = 1;
       current_mapping.mappingLed_bit.ring1_60 = 1;
       current_mapping.mappingLed_bit.ring1_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 2:
       current_mapping.mappingLed_bit.ring2_0 = 1;
       current_mapping.mappingLed_bit.ring2_60 = 1;
       current_mapping.mappingLed_bit.ring2_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 3:
       current_mapping.mappingLed_bit.ring3_0 = 1;
       current_mapping.mappingLed_bit.ring3_60 = 1;
       current_mapping.mappingLed_bit.ring3_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 4:
       current_mapping.mappingLed_bit.ring4_0 = 1;
       current_mapping.mappingLed_bit.ring4_60 = 1;
       current_mapping.mappingLed_bit.ring4_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 5:
       current_mapping.mappingLed_bit.ring5_0 = 1;
       current_mapping.mappingLed_bit.ring5_60 = 1;
       current_mapping.mappingLed_bit.ring5_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 6:
       current_mapping.mappingLed_byte = 0;
-      parent.setMapping(current_mapping);
+      break;
+    case 10:
       parent.reset();
       break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
@@ -118,38 +115,35 @@ void SwipeRight::update(GestureBoardHalLed& parent, int count)
       current_mapping.mappingLed_bit.ring5_0 = 1;
       current_mapping.mappingLed_bit.ring5_60 = 1;
       current_mapping.mappingLed_bit.ring5_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 2:
       current_mapping.mappingLed_bit.ring4_0 = 1;
       current_mapping.mappingLed_bit.ring4_60 = 1;
       current_mapping.mappingLed_bit.ring4_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 3:
       current_mapping.mappingLed_bit.ring3_0 = 1;
       current_mapping.mappingLed_bit.ring3_60 = 1;
       current_mapping.mappingLed_bit.ring3_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 4:
       current_mapping.mappingLed_bit.ring2_0 = 1;
       current_mapping.mappingLed_bit.ring2_60 = 1;
       current_mapping.mappingLed_bit.ring2_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 5:
       current_mapping.mappingLed_bit.ring1_0 = 1;
       current_mapping.mappingLed_bit.ring1_60 = 1;
       current_mapping.mappingLed_bit.ring1_120 = 1;
-      parent.setMapping(current_mapping);
       break;
     case 6:
       current_mapping.mappingLed_byte = 0;
-      parent.setMapping(current_mapping);
+      break;
+    case 10:
       parent.reset();
       break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
@@ -164,6 +158,7 @@ void FiveButtons::update(GestureBoardHalLed& parent, int count)
     switch (count)
     {
     case 1:
+      current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_0 = 1;
         current_mapping.mappingLed_bit.ring2_0 = 1;
         current_mapping.mappingLed_bit.ring3_0 = 1;
@@ -171,6 +166,7 @@ void FiveButtons::update(GestureBoardHalLed& parent, int count)
         current_mapping.mappingLed_bit.ring5_0 = 1;
         break;
     case 2:
+      current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_60 = 1;
         current_mapping.mappingLed_bit.ring2_60 = 1;
         current_mapping.mappingLed_bit.ring3_60 = 1;
@@ -178,6 +174,7 @@ void FiveButtons::update(GestureBoardHalLed& parent, int count)
         current_mapping.mappingLed_bit.ring5_60 = 1;
         break;
     case 3:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_120 = 1;
         current_mapping.mappingLed_bit.ring2_120 = 1;
         current_mapping.mappingLed_bit.ring3_120 = 1;
@@ -186,6 +183,7 @@ void FiveButtons::update(GestureBoardHalLed& parent, int count)
         parent.reset();
         break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
@@ -200,22 +198,26 @@ void ThreeButtons::update(GestureBoardHalLed& parent, int count)
     switch (count)
     {
     case 1:
+      current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_0 = 1;
         current_mapping.mappingLed_bit.ring3_0 = 1;
         current_mapping.mappingLed_bit.ring5_0 = 1;
         break;
     case 2:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_60 = 1;
         current_mapping.mappingLed_bit.ring3_60 = 1;
         current_mapping.mappingLed_bit.ring5_60 = 1;
         break;
     case 3:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring1_120 = 1;
         current_mapping.mappingLed_bit.ring3_120 = 1;
         current_mapping.mappingLed_bit.ring5_120 = 1;
         parent.reset();
         break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
@@ -231,19 +233,23 @@ void TwoButtons::update(GestureBoardHalLed& parent, int count)
     switch (count)
     {
     case 1:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring2_0 = 1;
         current_mapping.mappingLed_bit.ring4_0 = 1;
         break;
     case 2:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring2_60 = 1;
         current_mapping.mappingLed_bit.ring4_60 = 1;
         break;
     case 3:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring2_120 = 1;
         current_mapping.mappingLed_bit.ring4_120 = 1;
         parent.reset();
         break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
@@ -258,16 +264,19 @@ void OneButton::update(GestureBoardHalLed& parent, int count)
     switch (count)
     {
     case 1:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring3_0 = 1;
         break;
     case 2:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring3_60 = 1;
         break;
     case 3:
+    current_mapping.mappingLed_byte = 0;
         current_mapping.mappingLed_bit.ring3_120 = 1;
-        parent.reset();
         break;
     }
+    parent.setMapping(current_mapping);
     parent.set();
 }
 
