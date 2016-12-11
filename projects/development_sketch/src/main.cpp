@@ -1,9 +1,9 @@
 #include "Arduino.h"
-#include "GestureBoardHAL_V1_1.h"
+#include "GestureBoardHAL_ArduinoUNO_V1_1.h"
 #include "GestureBoardHAL_COM_V1_1.h"
 #include "GestureBoardHAL_LED_V1_1.h"
 
-GestureBoardHal_V1_1* gestureBoardHAL = new GestureBoardHal_V1_1();
+GestureBoardHal_ArduinoUNO_V1_1* gestureBoardHAL = new GestureBoardHal_ArduinoUNO_V1_1();
 GestureBoardHalLedV1_1 gestureBoardLED(GestureBoardHalLedV1_1::getAnimation(0), 200);
 GestureBoardHalCom_V1_1 gestureBoardCOM(9600);
 
@@ -13,7 +13,7 @@ void setup()
   gestureBoardCOM.open();
   gestureBoardLED.init();
   gestureBoardLED.setAnimation(GestureBoardHalLedV1_1::getAnimation(2));
-    gestureBoardLED.start();
+  gestureBoardLED.start();
   //gestureBoardCOM._bufferOut = "toto\r\n";
 }
 
