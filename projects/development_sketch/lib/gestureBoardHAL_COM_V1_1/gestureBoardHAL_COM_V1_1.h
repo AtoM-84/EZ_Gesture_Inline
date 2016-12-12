@@ -1,7 +1,6 @@
 #ifndef GESTURE_BOARD_HAL_COM_V1_1_H
 #define GESTURE_BOARD_HAL_COM_V1_1_H
 
-#include "Arduino.h"
 #include "gestureBoardHAL_COM.h"
 
 class GestureBoardHalCom_V1_1 : public GestureBoardHalCom

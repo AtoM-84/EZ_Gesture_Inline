@@ -1,12 +1,13 @@
 #ifndef GESTURE_BOARD_HAL_LED_V1_1_H
 #define GESTURE_BOARD_HAL_LED_V1_1_H
 
-#include "gestureBoardHAL_V1_1.h"
+#include "GPIOExpanderPCAL6416A.h"
+
 #include "gestureBoardHAL_LED.h"
 
 #define GPIO_EXPANDER_LED_ADDRESS 0x20
 
-class GestureBoardHalLedV1_1 : public GestureBoardHalLed
+class GestureBoardHalLed_V1_1 : public GestureBoardHalLed
 {
 
 private:
@@ -15,7 +16,7 @@ private:
   int _delay;
 
 public:
-  GestureBoardHalLedV1_1(Animation* defaultAnim, int delay);
+  GestureBoardHalLed_V1_1(Animation* defaultAnim, int delay);
   virtual void init();
   virtual void dim(int value);
   virtual void set();
