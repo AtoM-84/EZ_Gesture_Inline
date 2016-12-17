@@ -3,15 +3,15 @@
 
 #include "Arduino.h"
 
-class GestureBoardHalRange
-{
+class GestureBoardHalRange {
 protected:
-  int _timeOut;
   int _delay;
   uint8_t _convergenceTime;
 
 public:
+  unsigned long _timeOut;
   GestureBoardHalRange();
+  virtual void setTimeOut(unsigned long timeOut) = 0;
   virtual void init() = 0;
   virtual void initSensors() = 0;
   virtual void assignSensorsAddress() = 0;

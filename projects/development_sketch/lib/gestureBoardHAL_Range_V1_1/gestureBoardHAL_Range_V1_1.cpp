@@ -1,7 +1,7 @@
 #include "gestureBoardHAL_Range_V1_1.h"
 
-GestureBoardHalRange_V1_1::GestureBoardHalRange_V1_1():GestureBoardHalRange()
-{
+GestureBoardHalRange_V1_1::GestureBoardHalRange_V1_1()
+    : GestureBoardHalRange() {
   this->_pGPIO = new GPIO_EXPANDER(GPIO_EXPANDER_SENSORS_ADDRESS);
   this->_pSensor0 = new RANGE_SENSOR(SENSOR_0_ADDRESS);
   this->_pSensor1 = new RANGE_SENSOR(SENSOR_1_ADDRESS);
@@ -16,11 +16,21 @@ GestureBoardHalRange_V1_1::GestureBoardHalRange_V1_1():GestureBoardHalRange()
   this->_range4 = 0;
   this->_range5 = 0;
 
+  this->_flag1 = false;
+  this->_flag2 = false;
+  this->_flag3 = false;
+  this->_flag4 = false;
+  this->_flag5 = false;
+
+  this->_timeStamp = 0;
+
+  this->_motionDetected = false;
+  this->_alreadyFired = false;
+
   this->_delay = 500;
 }
 
-void GestureBoardHalRange_V1_1::init()
-{
+void GestureBoardHalRange_V1_1::init() {
   this->_pGPIO->writeConfigurationPortPair(0xFF00);
   delay(100);
   this->_pGPIO->writeRegisterPair(0x02, 0x0000);
@@ -30,57 +40,30 @@ void GestureBoardHalRange_V1_1::init()
   this->initSensors();
 }
 
-void GestureBoardHalRange_V1_1::assignSensorsAddress()
-{
+void GestureBoardHalRange_V1_1::assignSensorsAddress() {
   this->_pGPIO->writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x01);
   delay(10);
   this->_pSensor0->writeByte(I2C_SLAVE__DEVICE_ADDRESS, SENSOR_1_ADDRESS);
   delay(10);
-  if (0xB4 == this->_pSensor1->readByte(0x00))
-      {
-            Serial.println("Sensor 1 OK");
-      }
-  delay(20);
   this->_pGPIO->writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x03);
   delay(10);
   this->_pSensor0->writeByte(I2C_SLAVE__DEVICE_ADDRESS, SENSOR_2_ADDRESS);
   delay(10);
-  if (0xB4 == this->_pSensor2->readByte(0x00))
-      {
-            Serial.println("Sensor 2 OK");
-      }
-  delay(20);
   this->_pGPIO->writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x07);
   delay(10);
   this->_pSensor0->writeByte(I2C_SLAVE__DEVICE_ADDRESS, SENSOR_3_ADDRESS);
   delay(10);
-  if (0xB4 == this->_pSensor3->readByte(0x00))
-      {
-            Serial.println("Sensor 3 OK");
-      }
-  delay(20);
   this->_pGPIO->writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x0F);
   delay(10);
   this->_pSensor0->writeByte(I2C_SLAVE__DEVICE_ADDRESS, SENSOR_4_ADDRESS);
   delay(10);
-  if (0xB4 == this->_pSensor4->readByte(0x00))
-      {
-            Serial.println("Sensor 4 OK");
-      }
-  delay(20);
   this->_pGPIO->writeRegister(GPIO_OUTPUT_REGISTER_PORT0, 0x1F);
   delay(10);
   this->_pSensor0->writeByte(I2C_SLAVE__DEVICE_ADDRESS, SENSOR_5_ADDRESS);
   delay(10);
-  if (0xB4 == this->_pSensor5->readByte(0x00))
-      {
-            Serial.println("Sensor 5 OK");
-      }
-  delay(20);
 }
 
-void GestureBoardHalRange_V1_1::initSensors()
-{
+void GestureBoardHalRange_V1_1::initSensors() {
   this->_pSensor1->setPrivateRegisters();
   this->_pSensor2->setPrivateRegisters();
   this->_pSensor3->setPrivateRegisters();
@@ -98,41 +81,51 @@ void GestureBoardHalRange_V1_1::initSensors()
   this->_pSensor3->startRangeMeasurement();
   this->_pSensor4->startRangeMeasurement();
   this->_pSensor5->startRangeMeasurement();
-  /*
-  delay(10);
-  this->_range1 = this->_pSensor1->getRangeMeasurement();
-  delay(10);
-  this->_range2 = this->_pSensor2->getRangeMeasurement();
-  delay(10);
-  this->_range3 = this->_pSensor3->getRangeMeasurement();
-  delay(10);
-  this->_range4 = this->_pSensor4->getRangeMeasurement();
-  delay(10);
-  this->_range5 = this->_pSensor5->getRangeMeasurement();
-  delay(10);
-  Serial.println(this->_range1, DEC);
-  Serial.println(this->_range2, DEC);
-  Serial.println(this->_range3, DEC);
-  Serial.println(this->_range4, DEC);
-  Serial.println(this->_range5, DEC);
-  */
 }
 
-void GestureBoardHalRange_V1_1::rowMeasurement()
-{
+void GestureBoardHalRange_V1_1::rowMeasurement() {
   this->_pSensor1->startRangeMeasurement();
   delayMicroseconds(this->_delay);
-  this->_range5 = this->_pSensor5->getRangeMeasurement();
+  this->_range5 = 255 - this->_pSensor5->getRangeMeasurement();
+  if (this->_range5 > 80) {
+    this->_flag5 = true;
+  } else {
+    this->_flag5 = false;
+  }
   this->_pSensor2->startRangeMeasurement();
   delayMicroseconds(this->_delay);
-  this->_range1 = this->_pSensor1->getRangeMeasurement();
+  this->_range1 = 255 - this->_pSensor1->getRangeMeasurement();
+  if (this->_range1 > 80) {
+    this->_flag1 = true;
+  } else {
+    this->_flag1 = false;
+  }
   this->_pSensor3->startRangeMeasurement();
   delayMicroseconds(this->_delay);
-  this->_range2 = this->_pSensor2->getRangeMeasurement();
+  this->_range2 = 255 - this->_pSensor2->getRangeMeasurement();
+  if (this->_range2 > 80) {
+    this->_flag2 = true;
+  } else {
+    this->_flag2 = false;
+  }
   this->_pSensor4->startRangeMeasurement();
   delayMicroseconds(this->_delay);
-  this->_range3 = this->_pSensor3->getRangeMeasurement();
+  this->_range3 = 255 - this->_pSensor3->getRangeMeasurement();
+  if (this->_range3 > 80) {
+    this->_flag3 = true;
+  } else {
+    this->_flag3 = false;
+  }
   this->_pSensor5->startRangeMeasurement();
   delayMicroseconds(this->_delay);
-  this->_range4 = this->_pSensor4->getRangeMeasurement();
+  this->_range4 = 255 - this->_pSensor4->getRangeMeasurement();
+  if (this->_range4 > 80) {
+    this->_flag4 = true;
+  } else {
+    this->_flag4 = false;
+  }
+}
+
+void GestureBoardHalRange_V1_1::setTimeOut(unsigned long timeOut) {
+  this->_timeOut = timeOut;
 }

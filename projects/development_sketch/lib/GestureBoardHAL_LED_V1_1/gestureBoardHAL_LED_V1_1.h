@@ -3,24 +3,25 @@
 
 #include "GPIOExpanderPCAL6416A.h"
 
+#include "gestureBoardHAL_ArduinoUNO_V1_1.h"
 #include "gestureBoardHAL_LED.h"
 
 #define GPIO_EXPANDER_LED_ADDRESS 0x20
 
-class GestureBoardHalLed_V1_1 : public GestureBoardHalLed
-{
+class GestureBoardHalLed_V1_1 : public GestureBoardHalLed {
 
 private:
-  GPIO_EXPANDER* _pGPIO;
+  GPIO_EXPANDER *_pGPIO;
   int _lastMillis;
   int _delay;
 
 public:
-  GestureBoardHalLed_V1_1(Animation* defaultAnim, int delay);
+  GestureBoardHalLed_V1_1(Animation *defaultAnim, int delay);
   virtual void init();
   virtual void dim(int value);
   virtual void set();
   virtual void update();
+  virtual void blinker(int delayBlinker);
 };
 
 #endif
