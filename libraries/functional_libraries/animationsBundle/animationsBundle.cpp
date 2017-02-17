@@ -1,12 +1,11 @@
-#include "GestureBoardLED.h"
 
-//Swipe left methods
+#include "animationsBundle.h"
 
 SwipeLeft::SwipeLeft()
 {
 }
 
-void SwipeLeft::update(GestureBoardLED& parent, int count)
+void SwipeLeft::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -36,7 +35,7 @@ SwipeRight::SwipeRight()
 {
 }
 
-void SwipeRight::update(GestureBoardLED& parent, int count)
+void SwipeRight::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -66,7 +65,7 @@ FiveButtons::FiveButtons()
 {
 }
 
-void FiveButtons::update(GestureBoardLED& parent, int count)
+void FiveButtons::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -87,7 +86,7 @@ ThreeButtons::ThreeButtons()
 {
 }
 
-void ThreeButtons::update(GestureBoardLED& parent, int count)
+void ThreeButtons::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -106,10 +105,10 @@ void ThreeButtons::update(GestureBoardLED& parent, int count)
 
 TwoButtons::TwoButtons()
 {
-    
+
 }
 
-void TwoButtons::update(GestureBoardLED& parent, int count)
+void TwoButtons::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -130,7 +129,7 @@ OneButton::OneButton()
 {
 }
 
-void OneButton::update(GestureBoardLED& parent, int count)
+void OneButton::update(GestureBoardHalLed& parent, int count)
 {
     switch (count)
     {
@@ -151,74 +150,7 @@ SleepModePulse::SleepModePulse()
 {
 }
 
-void SleepModePulse::update(GestureBoardLED& parent, int count)
+void SleepModePulse::update(GestureBoardHalLed& parent, int count)
 {
-    
-}
 
-//Gesture Board LED methods
-
-Animation* GestureBoardLED::tabAnimations[]={new SwipeLeft(), new SwipeRight(), new FiveButtons(), new ThreeButtons(),new TwoButtons(),new OneButton(),new SleepModePulse()};
-
-GestureBoardLED::GestureBoardLED(GPIO_EXPANDER& gpio, Animation* defaultAnimation, int delay):_GPIO(gpio)
-{
-    // this->_GPIO = gpio;
-    this->_runningAnimation = defaultAnimation;
-    this->_runningState = false;
-    this->_count = 0;
-    this->_lastMillis = millis();
-    this->_delay = delay;
-}
-
-void GestureBoardLED::init()
-{
-    this->_GPIO.writeConfigurationPortPair(0x0000);
-    delay(1000);
-    this->_GPIO.writeRegisterPair(0x02, 0x0000);
-    delay(10);
-}
-
-void GestureBoardLED::setAnimation(Animation* anim)
-{
-    this->_runningAnimation = anim;
-    this->_count = 0;
-}
-
-void GestureBoardLED::update()
-{
-    int newTick = millis();
-    if (this->_runningState)
-    {
-        if(newTick - this->_lastMillis >= this->_delay)
-        {
-            this->_count++;
-            this->_lastMillis = newTick;
-        }
-        this->_runningAnimation->update(*this, this->_count);
-    }
-    
-}
-
-void GestureBoardLED::start()
-{
-    this->_runningState = true;
-    this->_count = 0;
-}
-
-void GestureBoardLED::stop()
-{
-    this->_runningState = false;
-    this->_count = 0;
-    this->_GPIO.writeRegisterPair(0x02, 0x0000);
-    delay(10);
-}
-
-void GestureBoardLED::reset()   
-{
-    this->_count = 0;
-}
-
-Animation* GestureBoardLED::getAnimation(int idx)
-{
-    return GestureBoardLED::tabAnimations[idx];
 }
