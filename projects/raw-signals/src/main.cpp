@@ -28,42 +28,6 @@ void setup() {
 
 void loop() {
   gestureBoardLED->update();
-  gestureBoardCOM->readMessage();
-  if (gestureBoardCOM->_newMessage) {
-    gestureBoardCOM->showLastMessage();
-    switch (gestureBoardCOM->_bufferIn[5]) {
-    case 48:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(0));
-      gestureBoardLED->start();
-      break;
-    case 49:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(1));
-      gestureBoardLED->start();
-      break;
-    case 50:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(2));
-      gestureBoardLED->start();
-      break;
-    case 51:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(3));
-      gestureBoardLED->start();
-      break;
-    case 52:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(4));
-      gestureBoardLED->start();
-      break;
-    case 53:
-      gestureBoardLED->stop();
-      gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(5));
-      gestureBoardLED->start();
-      break;
-    }
-  }
   gestureBoardRange->rowMeasurement();
   Serial.print("<");
   Serial.print("[");
