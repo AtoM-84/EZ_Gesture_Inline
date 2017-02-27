@@ -1,13 +1,13 @@
 /**************************************************************************/
 /*!
-	@file     RangeSensorVL6180X.cpp
-	@author   AtoM
-	@license  MIT
+        @file     RangeSensorVL6180X.cpp
+        @author   AtoM
+        @license  MIT
 
-This is a library for the VL6180X range sensor from STMicroelectronics. 
+This is a library for the VL6180X range sensor from STMicroelectronics.
 
     @section  HISTORY
-	v0.0  - Creating functions:
+        v0.0  - Creating functions:
     readByte
     writeByte
     setRangeConvergenceTime
@@ -21,8 +21,8 @@ This is a library for the VL6180X range sensor from STMicroelectronics.
 #include "WProgram.h"
 #endif
 
-#include <Wire.h>
 #include <RangeSensorVL6180X.h>
+#include <Wire.h>
 
 #define IDENTIFICATION__MODEL_ID 0x0000
 #define IDENTIFICATION__MODEL_REV_MAJOR 0x0001
@@ -84,14 +84,13 @@ This is a library for the VL6180X range sensor from STMicroelectronics.
 
 /**************************************************************************/
 /*! RANGE_SENSOR (const byte device_address)
-	@brief  Instantiates a new RANGE_SENSOR
-	@param  device_address	I2C device_address (7 bits SA)
+        @brief  Instantiates a new RANGE_SENSOR
+        @param  device_address	I2C device_address (7 bits SA)
 */
 /**************************************************************************/
 
-RANGE_SENSOR::RANGE_SENSOR(const byte device_address) : _device_address(device_address)
-{
-}
+RANGE_SENSOR::RANGE_SENSOR(const byte device_address)
+    : _device_address(device_address) {}
 
 /**************************************************************************/
 /*! readByte (uint16_t subAddress)
@@ -100,8 +99,7 @@ RANGE_SENSOR::RANGE_SENSOR(const byte device_address) : _device_address(device_a
 */
 /**************************************************************************/
 
-uint8_t RANGE_SENSOR::readByte(uint16_t subAddress)
-{
+uint8_t RANGE_SENSOR::readByte(uint16_t subAddress) {
   Wire.beginTransmission(_device_address);
   Wire.write((subAddress >> 8) & 0xFF);
   Wire.write(subAddress & 0xFF);
@@ -118,8 +116,7 @@ uint8_t RANGE_SENSOR::readByte(uint16_t subAddress)
 */
 /**************************************************************************/
 
-void RANGE_SENSOR::writeByte(uint16_t subAddress, uint8_t data)
-{
+void RANGE_SENSOR::writeByte(uint16_t subAddress, uint8_t data) {
   Wire.beginTransmission(_device_address);
   Wire.write((subAddress >> 8) & 0xFF);
   Wire.write(subAddress & 0xFF);
@@ -128,15 +125,38 @@ void RANGE_SENSOR::writeByte(uint16_t subAddress, uint8_t data)
 }
 
 /**************************************************************************/
+/*! writeTwoBytes (uint16_t subAddress, uint16_t data)
+    @brief read one byte of the adressed VL6180X using the Wire (I2C) library
+    @param subAddress : address of the written register (coded on two bytes)
+    @param data : data content to be written
+*/
+/**************************************************************************/
+
+void RANGE_SENSOR::writeTwoBytes(uint16_t subAddress, uint16_t data) {
+  Wire.beginTransmission(_device_address);
+  Wire.write((subAddress >> 8) & 0xFF);
+  Wire.write(subAddress & 0xFF);
+  Wire.write((data >> 8) & 0xFF);
+  Wire.endTransmission(true);
+
+  Wire.beginTransmission(_device_address);
+  Wire.write(((subAddress + 0x01) >> 8) & 0xFF);
+  Wire.write((subAddress + 0x01) & 0xFF);
+  Wire.write(data & 0xFF);
+  Wire.endTransmission(true);
+}
+
+/**************************************************************************/
 /*! setRangeConvergenceTime (uint8_t value)
-    @brief This function sets the range convergence time in order to limit the range to be measured if it is not needed to measure a long range. This will reduce power consumption.
+    @brief This function sets the range convergence time in order to limit the
+   range to be measured if it is not needed to measure a long range. This will
+   reduce power consumption.
     Reset value is 0x31. See datasheet p.60.
     @param value : value between 1 and 63 (0x3F)
 */
 /**************************************************************************/
 
-void RANGE_SENSOR::setRangeConvergenceTime(uint8_t value)
-{
+void RANGE_SENSOR::setRangeConvergenceTime(uint8_t value) {
   writeByte(SYSRANGE__MAX_CONVERGENCE_TIME, value);
 }
 
@@ -146,12 +166,13 @@ void RANGE_SENSOR::setRangeConvergenceTime(uint8_t value)
 */
 /**************************************************************************/
 
-void RANGE_SENSOR::setPrivateRegisters()
-{
+void RANGE_SENSOR::setPrivateRegisters() {
   if (!readByte(0x0016))
     return;
-  // This first instruction checks that the component was not already initialized by checking the register 0x0016 to be at 0 (fresh out of reset).
-  //If set to 0 the component is initialized and the function is stopped there.
+  // This first instruction checks that the component was not already
+  // initialized by checking the register 0x0016 to be at 0 (fresh out of
+  // reset).
+  // If set to 0 the component is initialized and the function is stopped there.
   // Set up private registers
   writeByte(0x0207, 0x01);
   writeByte(0x0208, 0x01);
@@ -194,27 +215,44 @@ void RANGE_SENSOR::setPrivateRegisters()
   writeByte(SYSRANGE__INTERMEASUREMENT_PERIOD, 0x09);
   writeByte(SYSALS__INTERMEASUREMENT_PERIOD, 0x31);
   writeByte(SYSTEM__INTERRUPT_CONFIG_GPIO, 0x24);
-  // Change fresh out of set status to 0 to indicate if the component was already configured after reset
+  // Change fresh out of set status to 0 to indicate if the component was
+  // already configured after reset
   writeByte(SYSTEM__FRESH_OUT_OF_RESET, 0x00);
 }
 
 /**************************************************************************/
 /*! singleRange ()
-    @brief perform one range measurement (not time efficient with multiple sensors)
+    @brief perform one range measurement (not time efficient with multiple
+   sensors)
 */
 /**************************************************************************/
 
-int RANGE_SENSOR::singleRange()
-{
+int RANGE_SENSOR::singleRange() {
   writeByte(SYSRANGE__START, 0x01);
-  while ((readByte(RESULT__INTERRUPT_STATUS_GPIO) & 0x07) != 4)
-  {
+  while ((readByte(RESULT__INTERRUPT_STATUS_GPIO) & 0x07) != 4) {
     delay(1);
-    //Serial.print(".");
   }
   int rangeValue = readByte(RESULT__RANGE_VAL);
   writeByte(SYSTEM__INTERRUPT_CLEAR, 0x07);
   return rangeValue;
+}
+
+/**************************************************************************/
+/*! singleRawRange ()
+    @brief perform one raw range measurement (not time efficient with multiple
+   sensors) and
+*/
+/**************************************************************************/
+
+void RANGE_SENSOR::singleRawRangeAndReturnRate(int rawRange,
+                                               int rangeReturnRate) {
+  writeByte(SYSRANGE__START, 0x01);
+  while ((readByte(RESULT__INTERRUPT_STATUS_GPIO) & 0x07) != 4) {
+    delay(1);
+  }
+  rawRange = readByte(RESULT__RANGE_RAW);
+  rangeReturnRate = readByte(RESULT__RANGE_RETURN_RATE);
+  writeByte(SYSTEM__INTERRUPT_CLEAR, 0x07);
 }
 
 /**************************************************************************/
@@ -223,10 +261,7 @@ int RANGE_SENSOR::singleRange()
 */
 /**************************************************************************/
 
-void RANGE_SENSOR::startRangeMeasurement()
-{
-  writeByte(SYSRANGE__START, 0x01);
-}
+void RANGE_SENSOR::startRangeMeasurement() { writeByte(SYSRANGE__START, 0x01); }
 
 /**************************************************************************/
 /*! getRangeMeasurement ()
@@ -234,9 +269,43 @@ void RANGE_SENSOR::startRangeMeasurement()
 */
 /**************************************************************************/
 
-int RANGE_SENSOR::getRangeMeasurement()
-{
+int RANGE_SENSOR::getRangeMeasurement() {
   int rangeValue = readByte(RESULT__RANGE_VAL);
   writeByte(SYSTEM__INTERRUPT_CLEAR, 0x07);
   return rangeValue;
+}
+
+/**************************************************************************/
+/*! performCrossTalkCompensation ()
+    @brief execute the cross-talk compensation on the part
+*/
+/**************************************************************************/
+
+int RANGE_SENSOR::setCrossTalkCompensation() {
+  int crossTalkCompensationRate;
+  int rawRangeTable[10];
+  int rawRangeReturnRate[10];
+
+  for (int i = 0; i < 10; i++) {
+    singleRawRangeAndReturnRate(rawRangeTable[i], rawRangeReturnRate[i]);
+    delay(100);
+    Serial.print("raw range ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(rawRangeTable[i]);
+    Serial.print("return rate ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(rawRangeReturnRate[i]);
+  }
+
+  int averageRawRange = (rawRangeTable[0] + rawRangeTable[1] + rawRangeTable[2] + rawRangeTable[3] + rawRangeTable[4] + rawRangeTable[5] + rawRangeTable[6] + rawRangeTable[7] + rawRangeTable[8] + rawRangeTable[9]) / 10;
+
+  int averageReturnRate = ((rawRangeReturnRate[0] + rawRangeReturnRate[1] + rawRangeReturnRate[2] + rawRangeReturnRate[3] + rawRangeReturnRate[4] + rawRangeReturnRate[5] + rawRangeReturnRate[6] + rawRangeReturnRate[7] + rawRangeReturnRate[8] + rawRangeReturnRate[9]) / 128) / 10;
+
+  crossTalkCompensationRate = averageReturnRate * ((1 - averageRawRange)/100);
+
+  writeTwoBytes(SYSRANGE__CROSSTALK_COMPENSATION_RATE, crossTalkCompensationRate);
+
+  return crossTalkCompensationRate;
 }

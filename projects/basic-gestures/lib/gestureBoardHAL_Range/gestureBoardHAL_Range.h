@@ -15,7 +15,9 @@ public:
   virtual void init() = 0;
   virtual void initSensors() = 0;
   virtual void assignSensorsAddress() = 0;
-  virtual void rowMeasurement() = 0;
+  virtual int* setSensorsXtalkCompensation() = 0;
+  virtual void rowMeasurement(int threshold) = 0;
+  virtual int getMinRangeUnderThreshold(int threshold) = 0;
 };
 
 #endif

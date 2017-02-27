@@ -83,11 +83,11 @@ void GestureBoardHalRange_V1_1::initSensors() {
   this->_pSensor5->startRangeMeasurement();
 }
 
-void GestureBoardHalRange_V1_1::rowMeasurement() {
+void GestureBoardHalRange_V1_1::rowMeasurement(int threshold) {
   this->_pSensor1->startRangeMeasurement();
   delayMicroseconds(this->_delay);
   this->_range5 = 255 - this->_pSensor5->getRangeMeasurement();
-  if (this->_range5 > 80) {
+  if (this->_range5 > threshold) {
     this->_flag5 = true;
   } else {
     this->_flag5 = false;
@@ -95,7 +95,7 @@ void GestureBoardHalRange_V1_1::rowMeasurement() {
   this->_pSensor2->startRangeMeasurement();
   delayMicroseconds(this->_delay);
   this->_range1 = 255 - this->_pSensor1->getRangeMeasurement();
-  if (this->_range1 > 80) {
+  if (this->_range1 > threshold) {
     this->_flag1 = true;
   } else {
     this->_flag1 = false;
@@ -103,7 +103,7 @@ void GestureBoardHalRange_V1_1::rowMeasurement() {
   this->_pSensor3->startRangeMeasurement();
   delayMicroseconds(this->_delay);
   this->_range2 = 255 - this->_pSensor2->getRangeMeasurement();
-  if (this->_range2 > 80) {
+  if (this->_range2 > threshold) {
     this->_flag2 = true;
   } else {
     this->_flag2 = false;
@@ -111,7 +111,7 @@ void GestureBoardHalRange_V1_1::rowMeasurement() {
   this->_pSensor4->startRangeMeasurement();
   delayMicroseconds(this->_delay);
   this->_range3 = 255 - this->_pSensor3->getRangeMeasurement();
-  if (this->_range3 > 80) {
+  if (this->_range3 > threshold) {
     this->_flag3 = true;
   } else {
     this->_flag3 = false;
@@ -119,13 +119,55 @@ void GestureBoardHalRange_V1_1::rowMeasurement() {
   this->_pSensor5->startRangeMeasurement();
   delayMicroseconds(this->_delay);
   this->_range4 = 255 - this->_pSensor4->getRangeMeasurement();
-  if (this->_range4 > 80) {
+  if (this->_range4 > threshold) {
     this->_flag4 = true;
   } else {
     this->_flag4 = false;
   }
 }
 
+int GestureBoardHalRange_V1_1::getMinRangeUnderThreshold(int threshold)  {
+  int rangeArray[5];
+  int rangeMinimum = 0;
+  int minimum;
+
+  rangeArray[0] = this->_range1;
+  rangeArray[1] = this->_range2;
+  rangeArray[2] = this->_range3;
+  rangeArray[3] = this->_range4;
+  rangeArray[4] = this->_range5;
+
+  minimum = 0;
+
+  for (int i = 0; i < 5; i++)
+  {
+    if (rangeArray[i] > threshold)
+    {
+      if (rangeMinimum == 0)
+      {
+        rangeMinimum = rangeArray[i];
+        minimum = i+1;
+      }
+      else if (rangeArray[i] < rangeMinimum)
+      {
+        rangeMinimum = rangeArray[i];
+        minimum = i+1;
+      }
+    }
+  }
+  return minimum;
+}
+
 void GestureBoardHalRange_V1_1::setTimeOut(unsigned long timeOut) {
   this->_timeOut = timeOut;
 }
+
+int* GestureBoardHalRange_V1_1::setSensorsXtalkCompensation() {
+  int xtalkValues[5];
+  xtalkValues[0] = this->_pSensor1->setCrossTalkCompensation();
+  xtalkValues[1] = this->_pSensor2->setCrossTalkCompensation();
+  xtalkValues[2] = this->_pSensor3->setCrossTalkCompensation();
+  xtalkValues[3] = this->_pSensor4->setCrossTalkCompensation();
+  xtalkValues[4] = this->_pSensor5->setCrossTalkCompensation();
+  return *xtalkValues;
+};

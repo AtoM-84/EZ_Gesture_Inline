@@ -15,6 +15,7 @@ unsigned long pwmValue;
 unsigned long timeElapsed;
 bool overOffDone = false;
 int overValue;
+char previousOver[11] ="<overOff_x>";
 
 void setup() {
   gestureBoardHAL->init();
@@ -23,7 +24,7 @@ void setup() {
   gestureBoardRange->init();
   gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(2));
   gestureBoardLED->start();
-  gestureBoardRange->setTimeOut(800);
+  gestureBoardRange->setTimeOut(600);
 }
 
 void loop() {
@@ -64,8 +65,7 @@ void loop() {
       break;
     }
   }
-  gestureBoardRange->rowMeasurement();
-
+  gestureBoardRange->rowMeasurement(150);
   // nouvelle partie du code
   if (gestureBoardRange->_motionDetected) {
     if (gestureBoardRange->_flag1 && !gestureBoardRange->_flag2 &&
@@ -308,6 +308,7 @@ void loop() {
                !gestureBoardRange->_flag3 && !gestureBoardRange->_flag4 &&
                gestureBoardRange->_flag5))) {
     gestureBoardRange->_motionDetected = true;
+    overOffDone = false;
   } else {
     gestureBoardRange->_alreadyFired = false;
     overOffDone = false;

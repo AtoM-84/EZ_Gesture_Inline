@@ -1,13 +1,13 @@
 /**************************************************************************/
 /*!
-	@file     RangeSensorVL6180X.h
-	@author   AtoM
-	@license  MIT
+        @file     RangeSensorVL6180X.h
+        @author   AtoM
+        @license  MIT
 
-This is a library for the VL6180X range sensor from STMicroelectronics. 
+This is a library for the VL6180X range sensor from STMicroelectronics.
 
-	@section  HISTORY
-	v0.0  - Creating functions:
+        @section  HISTORY
+        v0.0  - Creating functions:
     readByte
     writeByte
     setRangeConvergenceTime
@@ -82,24 +82,26 @@ This is a library for the VL6180X range sensor from STMicroelectronics.
 #define I2C_SLAVE__DEVICE_ADDRESS 0x0212
 #define INTERLEAVED_MODE__ENABLE 0x02A3
 
-class RANGE_SENSOR
-{
-  public:
-    RANGE_SENSOR(const byte device_address);
+class RANGE_SENSOR {
+public:
+  RANGE_SENSOR(const byte device_address);
 
-    //general purpose functions
-    uint8_t readByte(uint16_t subAddress);
-    void writeByte(uint16_t subAddress, uint8_t data);
+  // general purpose functions
+  uint8_t readByte(uint16_t subAddress);
+  void writeByte(uint16_t subAddress, uint8_t data);
+  void writeTwoBytes(uint16_t subAddress, uint16_t data);
 
-    //register dedicated functions
-    void setRangeConvergenceTime(uint8_t value);
-    void setPrivateRegisters();
-    int singleRange();
-    void startRangeMeasurement();
-    int getRangeMeasurement();
+  // register dedicated functions
+  void setRangeConvergenceTime(uint8_t value);
+  void setPrivateRegisters();
+  int singleRange();
+  void startRangeMeasurement();
+  int getRangeMeasurement();
+  void singleRawRangeAndReturnRate(int rawRange, int rangeReturnRate);
+  int setCrossTalkCompensation();
 
-  private:
-    const byte _device_address;
+private:
+  const byte _device_address;
 };
 
 #endif

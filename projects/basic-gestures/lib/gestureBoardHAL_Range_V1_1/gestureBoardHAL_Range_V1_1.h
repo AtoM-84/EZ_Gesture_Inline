@@ -47,8 +47,10 @@ public:
   virtual void setTimeOut(unsigned long timeOut);
   virtual void init();
   virtual void initSensors();
+  virtual int* setSensorsXtalkCompensation();
   virtual void assignSensorsAddress();
-  virtual void rowMeasurement();
+  virtual void rowMeasurement(int threshold);
+  virtual int getMinRangeUnderThreshold(int threshold);
 };
 
 #endif
