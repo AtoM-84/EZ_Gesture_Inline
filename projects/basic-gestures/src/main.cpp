@@ -8,14 +8,27 @@ GestureBoardHal_ArduinoUNO_V1_1 *gestureBoardHAL =
     new GestureBoardHal_ArduinoUNO_V1_1();
 GestureBoardHalCom_V1_1 *gestureBoardCOM = new GestureBoardHalCom_V1_1(115200);
 GestureBoardHalLed_V1_1 *gestureBoardLED =
-    new GestureBoardHalLed_V1_1(GestureBoardHalLed_V1_1::getAnimation(0), 150);
+    new GestureBoardHalLed_V1_1(GestureBoardHalLed_V1_1::getAnimation(0), 100);
 GestureBoardHalRange_V1_1 *gestureBoardRange = new GestureBoardHalRange_V1_1();
 
+
+// click button variables
 unsigned long pwmValue;
 unsigned long timeElapsed;
 bool overOffDone = false;
 int overValue;
-char previousOver[11] ="<overOff_x>";
+
+// swipe variables
+bool swipeRightOn = false;
+int swipeRightCounter = 0;
+int swipeRightTimer = millis();
+int swipeRightArray[5];
+
+// swipe variables
+bool swipeLeftOn = false;
+int swipeLeftCounter = 0;
+int swipeLeftTimer = millis();
+int swipeLeftArray[5];
 
 void setup() {
   gestureBoardHAL->init();
@@ -66,6 +79,69 @@ void loop() {
     }
   }
   gestureBoardRange->rowMeasurement(150);
+
+  if (swipeRightOn == true)
+  {
+    int swipeRightTimerElapsed = millis() - swipeRightTimer;
+    if (swipeRightTimerElapsed > 250)
+    {
+      swipeRightOn = false;
+      swipeRightCounter = 0;
+      Serial.println("restart swipe timer");
+    }
+    else if ((swipeRightTimerElapsed < 250) && (swipeRightCounter >= 2))
+    {
+      if((swipeRightArray[0] < swipeRightArray[1]) && (swipeRightArray[1] < swipeRightArray[2]) && (!gestureBoardRange->_flag1 && !gestureBoardRange->_flag2 &&
+          !gestureBoardRange->_flag3 && !gestureBoardRange->_flag4 && !gestureBoardRange->_flag5))
+      {
+        swipeRightOn = false;
+        swipeRightCounter = 0;
+        gestureBoardCOM->sendMessage("<swipe_right>", 13);
+        Serial.print("[");
+        Serial.print(swipeRightArray[0]);
+        Serial.print(",");
+        Serial.print(swipeRightArray[1]);
+        Serial.print(",");
+        Serial.print(swipeRightArray[2]);
+        Serial.println("]");
+        gestureBoardLED->stop();
+        gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(0));
+        gestureBoardLED->start();
+      }
+    }
+  }
+
+  if (swipeLeftOn == true)
+  {
+    int swipeLeftTimerElapsed = millis() - swipeLeftTimer;
+    if (swipeLeftTimerElapsed > 250)
+    {
+      swipeLeftOn = false;
+      swipeLeftCounter = 0;
+      Serial.println("restart swipe timer");
+    }
+    else if ((swipeLeftTimerElapsed < 250) && (swipeLeftCounter >= 2))
+    {
+      if((swipeLeftArray[0] > swipeLeftArray[1]) && (swipeLeftArray[1] > swipeLeftArray[2]) && (!gestureBoardRange->_flag1 && !gestureBoardRange->_flag2 &&
+          !gestureBoardRange->_flag3 && !gestureBoardRange->_flag4 && !gestureBoardRange->_flag5))
+      {
+        swipeLeftOn = false;
+        swipeLeftCounter = 0;
+        gestureBoardCOM->sendMessage("<swipe_left>", 12);
+        Serial.print("[");
+        Serial.print(swipeLeftArray[0]);
+        Serial.print(",");
+        Serial.print(swipeLeftArray[1]);
+        Serial.print(",");
+        Serial.print(swipeLeftArray[2]);
+        Serial.println("]");
+        gestureBoardLED->stop();
+        gestureBoardLED->setAnimation(GestureBoardHalLed_V1_1::getAnimation(1));
+        gestureBoardLED->start();
+      }
+    }
+  }
+
   // nouvelle partie du code
   if (gestureBoardRange->_motionDetected) {
     if (gestureBoardRange->_flag1 && !gestureBoardRange->_flag2 &&
@@ -88,6 +164,25 @@ void loop() {
           gestureBoardCOM->sendMessage("<overOn_1>", 10);
           overValue = 1;
           gestureBoardRange->_timeStamp = millis();
+
+          if (swipeRightOn == false)
+          {
+            swipeRightOn = true;
+            swipeRightCounter = 0;
+            swipeRightTimer = millis();
+            swipeRightArray[swipeRightCounter] = overValue;
+            Serial.print("swipe start :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+
+          if (swipeLeftOn == true)
+          {
+            swipeLeftCounter +=1;
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            swipeLeftTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
 
         } else {
           timeElapsed = millis() - gestureBoardRange->_timeStamp;
@@ -125,6 +220,34 @@ void loop() {
 
           gestureBoardCOM->sendMessage("<overOn_2>", 10);
           overValue = 2;
+
+          if (swipeRightOn == true)
+          {
+            swipeRightCounter +=1;
+            swipeRightArray[swipeRightCounter] = overValue;
+            swipeRightTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+          else if (swipeRightOn == false)
+          {
+            swipeRightOn = true;
+            swipeRightCounter = 0;
+            swipeRightTimer = millis();
+            swipeRightArray[swipeRightCounter] = overValue;
+            Serial.print("swipe start :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+
+          if (swipeLeftOn == true)
+          {
+            swipeLeftCounter +=1;
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            swipeLeftTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
+
           gestureBoardRange->_timeStamp = millis();
 
         } else {
@@ -164,6 +287,25 @@ void loop() {
 
           gestureBoardCOM->sendMessage("<overOn_3>", 10);
           overValue = 3;
+
+          if (swipeRightOn == true)
+          {
+            swipeRightCounter +=1;
+            swipeRightArray[swipeRightCounter] = overValue;
+            swipeRightTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+
+          if (swipeLeftOn == true)
+          {
+            swipeLeftCounter +=1;
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            swipeLeftTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
+
           gestureBoardRange->_timeStamp = millis();
         } else {
           timeElapsed = millis() - gestureBoardRange->_timeStamp;
@@ -202,6 +344,34 @@ void loop() {
 
           gestureBoardCOM->sendMessage("<overOn_4>", 10);
           overValue = 4;
+
+          if (swipeRightOn == true)
+          {
+            swipeRightCounter +=1;
+            swipeRightArray[swipeRightCounter] = overValue;
+            swipeRightTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+
+          if (swipeLeftOn == true)
+          {
+            swipeLeftCounter +=1;
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            swipeLeftTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
+          else if (swipeLeftOn == false)
+          {
+            swipeLeftOn = true;
+            swipeLeftCounter = 0;
+            swipeLeftTimer = millis();
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            Serial.print("swipe start :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
+
           gestureBoardRange->_timeStamp = millis();
         } else {
           timeElapsed = millis() - gestureBoardRange->_timeStamp;
@@ -242,6 +412,26 @@ void loop() {
 
           gestureBoardCOM->sendMessage("<overOn_5>", 10);
           overValue = 5;
+
+          if (swipeRightOn == true)
+          {
+            swipeRightCounter +=1;
+            swipeRightArray[swipeRightCounter] = overValue;
+            swipeRightTimer = millis();
+            Serial.print("swipe continue :");
+            Serial.println(swipeRightArray[swipeRightCounter]);
+          }
+
+          if (swipeLeftOn == false)
+          {
+            swipeLeftOn = true;
+            swipeLeftCounter = 0;
+            swipeLeftTimer = millis();
+            swipeLeftArray[swipeLeftCounter] = overValue;
+            Serial.print("swipe start :");
+            Serial.println(swipeLeftArray[swipeLeftCounter]);
+          }
+
           gestureBoardRange->_timeStamp = millis();
         } else {
           // ending detection condition ==> click action
